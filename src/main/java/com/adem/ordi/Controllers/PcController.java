@@ -35,7 +35,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/pcs")
 public class PcController {
@@ -45,11 +45,10 @@ public class PcController {
 
     @GetMapping
     public ResponseEntity<List<Pc>> getAllPcs(@RequestParam (name="page", defaultValue = "0") int page,
-                                              @RequestParam (name="size", defaultValue = "3") int size) {
+                                              @RequestParam (name="size", defaultValue = "100") int size) {
         List<Pc> pcs = pcService.getAllPcParPage(page, size).getContent();
         return new ResponseEntity<>(pcs, HttpStatus.OK);
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<Pc> getPcById(@PathVariable Long id) {
         Pc pc = pcService.getPc(id);
@@ -58,7 +57,6 @@ public class PcController {
         }
         return new ResponseEntity<>(pc, HttpStatus.OK);
     }
-
     @PostMapping
     public ResponseEntity<?> createPc(@Valid @RequestBody Pc pc, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -80,7 +78,6 @@ public class PcController {
         }
         return new ResponseEntity<>(existingPc, HttpStatus.OK);
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePc(@PathVariable Long id) {
         try {
@@ -90,4 +87,15 @@ public class PcController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if not found
         }
     }
+
+    @RequestMapping(value="/prodsByName/{nom}",method = RequestMethod.GET)
+    public List<Pc> findByNomPcContains(@PathVariable("nom") String nom) {
+        return pcService.findByNomPcContains(nom);
+    }
+    @RequestMapping(value="/pcsMar/{idMarque}",method = RequestMethod.GET)
+    public List<Pc> findByMarquePc(@PathVariable("idMarque") Long idMarque) {
+
+        return pcService.findByMarquePcIdMarque(idMarque);
+    }
+
 }
